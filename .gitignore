@@ -1,0 +1,18 @@
+# User Data (Secret)
+users.json
+
+# Environment Variables
+.env
+.env.local
+
+# Dependencies & Caches
+node_modules/
+__pycache__/
+.venv/
+env/
+
+# Vercel Internal
+.vercel/
+
+# Original Dataset (Ignored to keep it secure with you)
+heart.csv

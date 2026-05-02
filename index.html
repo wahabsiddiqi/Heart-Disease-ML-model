@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+    <meta name="description" content="Predict heart disease risk using our advanced ML model.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Animated Shapes -->
+    <div class="bg-shape shape1"></div>
+    <div class="bg-shape shape2"></div>
+    <div class="bg-shape shape3"></div>
+
+    <main class="container">
+        <div class="glass-panel">
+            <header class="header">
+                <div class="logo">
+                    <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="heart-icon"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <h1>CardioCare AI</h1>
+                </div>
+                <p class="subtitle">Advanced Heart Disease Risk Assessment</p>
+            </header>
+
+            <!-- User Info Form (Step 1) -->
+            <form id="userInfoForm" class="form-section active-section">
+                <h2>Welcome</h2>
+                <p class="section-desc">Please provide some basic information to get started.</p>
+                
+                <div class="input-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="John Doe">
+                </div>
+
+                <div class="input-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" required placeholder="45" min="1" max="120">
+                </div>
+
+                <div class="input-group">
+                    <label>Gender</label>
+                    <div class="radio-group">
+                        <label class="radio-card">
+                            <input type="radio" name="gender" value="Male" required>
+                            <span class="card-content">Male</span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="gender" value="Female">
+                            <span class="card-content">Female</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="continueBtn">
+                    <span>Continue to Assessment</span>
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+            </form>
+
+            <!-- Success / Assessment Screen (Step 2) -->
+            <div id="assessmentSection" class="form-section hidden-section">
+                <div class="success-icon" style="margin-bottom: 10px;">
+                    <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+                <h2>Profile Saved!</h2>
+                <p class="section-desc">Hello, <span id="displayUserName" class="highlight"></span>. Please enter your medical details.</p>
+                
+                <form id="predictionForm" class="medical-form">
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label>Resting BP (mm Hg)</label>
+                            <input type="number" id="restingBP" required placeholder="120">
+                        </div>
+                        <div class="input-group">
+                            <label>Cholesterol (mg/dl)</label>
+                            <input type="number" id="cholesterol" required placeholder="200">
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label>Max Heart Rate</label>
+                            <input type="number" id="maxHR" required placeholder="150">
+                        </div>
+                        <div class="input-group">
+                            <label>Oldpeak</label>
+                            <input type="number" step="0.1" id="oldpeak" required placeholder="0.0">
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label>Fasting Blood Sugar</label>
+                            <select id="fastingBS" required class="custom-select">
+                                <option value="0">Lower than 120 mg/dl (0)</option>
+                                <option value="1">Greater than 120 mg/dl (1)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Chest Pain Type</label>
+                            <select id="chestPainType" required class="custom-select">
+                                <option value="ATA">Atypical Angina (ATA)</option>
+                                <option value="NAP">Non-Anginal Pain (NAP)</option>
+                                <option value="ASY" selected>Asymptomatic (ASY)</option>
+                                <option value="TA">Typical Angina (TA)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label>Resting ECG</label>
+                            <select id="restingECG" required class="custom-select">
+                                <option value="Normal" selected>Normal</option>
+                                <option value="ST">ST-T wave abnormality</option>
+                                <option value="LVH">Left ventricular hypertrophy (LVH)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>ST Slope</label>
+                            <select id="stSlope" required class="custom-select">
+                                <option value="Up">Upsloping</option>
+                                <option value="Flat" selected>Flat</option>
+                                <option value="Down">Downsloping</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Exercise Induced Angina</label>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="exerciseAngina" value="Y" required>
+                                <span class="card-content">Yes</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="exerciseAngina" value="N" checked>
+                                <span class="card-content">No</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="margin-top:20px;">
+                        <span>Predict Risk</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Result Section (Step 3) -->
+            <div id="resultSection" class="form-section hidden-section" style="text-align: center;">
+                <h2 id="resultTitle">Prediction Result</h2>
+                <div id="resultBox" class="result-box">
+                    <!-- Result content will be injected here -->
+                </div>
+                <button id="restartBtn" class="btn-secondary" style="margin-top:20px;">Start Over</button>
+            </div>
+
+            <!-- Loader -->
+            <div id="loader" class="loader-overlay hidden">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
