@@ -9,6 +9,17 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
+# Attempt to connect to Vercel KV Database (Redis)
+try:
+    import redis
+    kv_url = os.environ.get("KV_URL")
+    if kv_url:
+        r = redis.from_url(kv_url)
+    else:
+        r = None
+except ImportError:
+    r = None
+
 # Load models
 ROOT_DIR = os.path.dirname(__file__)
 MODEL_PATH = os.path.join(ROOT_DIR, 'KNN_heart.pkl')
@@ -44,6 +55,16 @@ def save_user():
         'timestamp': datetime.now().isoformat()
     }
 
+    # If Vercel KV is configured, save there (Persistent!)
+    if r:
+        try:
+            r.lpush("users_data", json.dumps(new_user))
+            return jsonify({'message': 'User saved permanently to Database', 'user': new_user}), 200
+        except Exception as e:
+            print("Redis error:", e)
+            return jsonify({'message': 'Error saving user to database.'}), 500
+
+    # Fallback: Save to local users.json (Only works on Local PC, not Vercel)
     file_path = os.path.join(ROOT_DIR, 'users.json')
     
     users = []
@@ -61,9 +82,9 @@ def save_user():
             json.dump(users, f, indent=2)
     except Exception as write_error:
         print("Could not write to users.json", write_error)
-        return jsonify({'message': 'Error saving user to file.'}), 500
+        return jsonify({'message': 'Error saving user locally.'}), 500
 
-    return jsonify({'message': 'User saved successfully', 'user': new_user}), 200
+    return jsonify({'message': 'User saved locally', 'user': new_user}), 200
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
