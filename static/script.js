@@ -47,10 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 400);
 
         } catch (error) {
-            console.error('Error saving user data:', error);
-            alert('There was a problem saving your information. However, you can still proceed to the assessment.');
+            // Silently proceed - saving is optional, not critical
+            console.log('User save skipped (expected on Vercel), proceeding to assessment.');
             
-            // Proceed anyway for local dev or fallback
             userInfoForm.classList.remove('active-section');
             userInfoForm.classList.add('hidden-section');
             displayUserName.textContent = name;
@@ -110,24 +109,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 assessmentSection.classList.remove('active-section');
                 assessmentSection.classList.add('hidden-section');
                 
+                const isHighRisk = resultData.prediction === 1;
+                const prob = resultData.probability !== null ? resultData.probability.toFixed(1) : null;
+
                 setTimeout(() => {
                     resultSection.classList.remove('hidden-section');
                     resultSection.classList.add('active-section');
                     
-                    if (resultData.prediction === 1) {
-                        resultBox.innerHTML = `⚠️ High Risk Detected<br><span style="font-size:0.9rem; font-weight:normal; color:var(--text-secondary)">Please consult a healthcare professional.</span>`;
+                    if (isHighRisk) {
                         resultBox.className = 'result-box result-high';
+                        resultBox.innerHTML = `
+                            <div style="font-size:2.5rem; margin-bottom:12px;">⚠️</div>
+                            <div style="font-size:1.3rem; font-weight:700; color:#ef4444; margin-bottom:8px;">High Risk Detected</div>
+                            <div style="font-size:0.95rem; font-weight:400; color:var(--text-secondary); margin-bottom:16px;">Based on your data, there is a <strong style="color:#ef4444">high likelihood</strong> of heart disease. Please consult a cardiologist or healthcare professional as soon as possible.</div>
+                            ${prob !== null ? `<div style="font-size:1rem; font-weight:600; color:#ef4444;">Risk Probability: ${prob}%</div>` : ''}
+                        `;
                     } else {
-                        resultBox.innerHTML = `✅ Low Risk Detected<br><span style="font-size:0.9rem; font-weight:normal; color:var(--text-secondary)">Keep up the healthy lifestyle!</span>`;
                         resultBox.className = 'result-box result-low';
-                    }
-
-                    if (resultData.probability !== null) {
-                        resultBox.innerHTML += `<br><span style="font-size:0.85rem; opacity:0.8">Risk Probability: ${resultData.probability.toFixed(2)}%</span>`;
+                        resultBox.innerHTML = `
+                            <div style="font-size:2.5rem; margin-bottom:12px;">✅</div>
+                            <div style="font-size:1.3rem; font-weight:700; color:#10b981; margin-bottom:8px;">Low Risk</div>
+                            <div style="font-size:0.95rem; font-weight:400; color:var(--text-secondary); margin-bottom:16px;">Your results look good! No significant indicators of heart disease were found. Keep maintaining a healthy lifestyle.</div>
+                            ${prob !== null ? `<div style="font-size:1rem; font-weight:600; color:#10b981;">Risk Probability: ${prob}%</div>` : ''}
+                        `;
                     }
                 }, 400);
             } else {
-                alert("Error during prediction: " + resultData.error);
+                alert("Prediction error: " + resultData.error);
             }
 
         } catch (error) {

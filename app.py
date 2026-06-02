@@ -62,9 +62,9 @@ def save_user():
             return jsonify({'message': 'User saved permanently to Database', 'user': new_user}), 200
         except Exception as e:
             print("Redis error:", e)
-            return jsonify({'message': 'Error saving user to database.'}), 500
+            # Fall through to local save attempt below
 
-    # Fallback: Save to local users.json (Only works on Local PC, not Vercel)
+    # Fallback: Try to save to local users.json (works locally, not on Vercel serverless)
     file_path = os.path.join(ROOT_DIR, 'users.json')
     
     users = []
@@ -72,19 +72,16 @@ def save_user():
         if os.path.exists(file_path):
             with open(file_path, 'r', encoding='utf-8') as f:
                 users = json.load(f)
-    except Exception as read_error:
-        print("Could not read users.json, starting fresh.", read_error)
-
-    users.append(new_user)
-
-    try:
+        users.append(new_user)
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(users, f, indent=2)
-    except Exception as write_error:
-        print("Could not write to users.json", write_error)
-        return jsonify({'message': 'Error saving user locally.'}), 500
+        print(f"User saved locally: {new_user['name']}")
+    except Exception as e:
+        # On Vercel serverless, file writes are not possible - this is expected
+        print(f"Could not save user to file (expected on Vercel): {e}")
 
-    return jsonify({'message': 'User saved locally', 'user': new_user}), 200
+    # Always return success so the frontend can proceed to assessment
+    return jsonify({'message': 'Proceeding to assessment', 'user': new_user}), 200
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
